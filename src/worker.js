@@ -1,5 +1,3 @@
-var neo4j = require('node-neo4j');
-var db = new neo4j('localhost:7474');
 var request = require('sync-request');
 var exec = require('child_process').exec;
 var fs = require('fs');
@@ -54,8 +52,9 @@ export function worker(options) {
 		*/
 
 		child.stdout.on('data', function(data) {
-			console.log(data);
-			//fs.unlinkSync(imagePath);
+			fs.unlinkSync(imagePath);
+
+			var response = []
 
 			var results = JSON.parse(data);
 			results.forEach(result => {
@@ -68,21 +67,14 @@ export function worker(options) {
 					element = element.split(' ').join('_');
 					element = element.replace(/[^a-zA-Z0-9\s!?]+/g, '');
 
-					saveMeta(value, element);
+					response.push({ value: value, element: element });
 				});
 			});
+
+			options.result = response;
+
+			resolve({error: null, data: options });
 		});
-
-		function saveMeta(value, element) {
-		  var query = "CREATE (" + element + ":Meta {meta:'" + element + "',album_type:'" + album_type + "',available_markets:'" + available_markets + "',external_urls:'" + external_urls + "',href:'" + href + "',id:'" + id + "',images:'" + images + "',name:'" + name + "',type:'" + type + "',uri:'" + uri + "',value:'" + value + "'})";
-
-			db.cypherQuery(query, function(err, result) {
-			    if(err) console.log(err);
-			    console.log(element, value);
-
-			    resolve({error: null, data: options });
-			});
-		}
 	});
 }
 
