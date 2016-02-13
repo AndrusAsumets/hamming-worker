@@ -1,5 +1,3 @@
-require('dotenv').config();
-
 let app = require('koa')();
 let router = require('koa-router')();
 let koaBody = require('koa-body')();
@@ -7,13 +5,12 @@ import request from 'request';
 
 import { worker } from './src/worker';
 
-let host = 'http://' + process.env.HEAD + ':6000' || 'localhost' + ':6000';
 const port = 6001;
 let job = null;
 
 router.post('/working', koaBody,
   function *(next) {
-    console.log('/working')
+    console.log('/working');
 
     let response;
 
@@ -27,13 +24,14 @@ router.post('/working', koaBody,
 
 router.post('/job', koaBody,
   function *(next) {
+    console.log('/job');
 
     let data = this.request.body;
     job = data.job;
+    const host = data.host;
 
     setTimeout(function() { 
       async function callWorker() {
-        data.python = process.env.PYTHON || 'python'
         let message = await worker({ data: data });
 
         if (message.error) {
@@ -43,6 +41,8 @@ router.post('/job', koaBody,
 
           return;
         }
+
+        console.log(host);
 
         request({ uri: host + '/complete', method: 'POST', json: message.data }, function (error, response, body) { job = null })
       }

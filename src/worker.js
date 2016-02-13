@@ -6,7 +6,6 @@ var path = require('path');
 export function worker(options) {
 	return new Promise(function(resolve, reject) {
 		console.log(options);
-		let python = options.data.python;
 		let element = options.data.job;
 		var url;
 
@@ -43,7 +42,7 @@ export function worker(options) {
 		var res = request('GET', url);
 		var contents = fs.writeFileSync(imagePath, res.getBody());
 
-		var child = exec(python + ' classify_image.py --image_file ' + imagePath);
+		var child = exec('python3 classify_image.py --image_file ' + imagePath);
 
 		/*
 		child.stderr.on('data', function (data) {
@@ -67,7 +66,11 @@ export function worker(options) {
 					element = element.split(' ').join('_');
 					element = element.replace(/[^a-zA-Z0-9\s!?]+/g, '');
 
-					response.push({ value: value, element: element });
+					let res = { value: value, element: element };
+
+					console.log(res);
+
+					response.push(res);
 				});
 			});
 
