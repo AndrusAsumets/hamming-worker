@@ -42,7 +42,7 @@ export function worker(options) {
 		var res = request('GET', url);
 		var contents = fs.writeFileSync(imagePath, res.getBody());
 
-		var child = exec('python3 classify_image.py --image_file ' + imagePath);
+		var child = exec('python classify_image.py --image_file ' + imagePath);
 
 		/*
 		child.stderr.on('data', function (data) {
