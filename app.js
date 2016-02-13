@@ -1,14 +1,12 @@
-const port = 6001;
 let app = require('koa')();
 let router = require('koa-router')();
 let koaBody = require('koa-body')();
 import request from 'request';
-import neo4j from 'node-neo4j';
-let db = new neo4j('localhost:7474');
 
 import { worker } from './src/worker';
 
 let host = 'http://127.0.0.1:6000';
+const port = 6001;
 let job = null;
 
 router.post('/working', koaBody,

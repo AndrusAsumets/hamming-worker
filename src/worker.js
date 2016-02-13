@@ -1,3 +1,4 @@
+var neo4j = require('node-neo4j');
 var db = new neo4j('localhost:7474');
 var request = require('sync-request');
 var exec = require('child_process').exec;
