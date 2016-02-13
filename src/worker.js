@@ -1,5 +1,3 @@
-require('dotenv').config();
-
 var neo4j = require('node-neo4j');
 var db = new neo4j('localhost:7474');
 var request = require('sync-request');
@@ -7,9 +5,11 @@ var exec = require('child_process').exec;
 var fs = require('fs');
 var path = require('path');
 
-export function worker(data) {
+export function worker(options) {
 	return new Promise(function(resolve, reject) {
-		var element;
+		console.log(options);
+		let python = options.data.python;
+		let element = options.data.job;
 		var url;
 
 		//json strings
@@ -23,8 +23,6 @@ export function worker(data) {
 		var type;
 		var uri;
 		var imagePath;
-
-		element = data.job;
 
 		try {
 			album_type = element.album_type;
@@ -47,7 +45,7 @@ export function worker(data) {
 		var res = request('GET', url);
 		var contents = fs.writeFileSync(imagePath, res.getBody());
 
-		var child = exec('python classify_image.py --image_file ' + imagePath);
+		var child = exec(python + ' classify_image.py --image_file ' + imagePath);
 
 		/*
 		child.stderr.on('data', function (data) {
@@ -82,7 +80,7 @@ export function worker(data) {
 			    if(err) console.log(err);
 			    console.log(element, value);
 
-			    resolve({error: null, data: data });
+			    resolve({error: null, data: options });
 			});
 		}
 	});

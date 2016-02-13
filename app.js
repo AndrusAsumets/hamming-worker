@@ -7,7 +7,7 @@ import request from 'request';
 
 import { worker } from './src/worker';
 
-let host = 'http://' + process.env.HEAD || 'localhost' + ':6000';
+let host = 'http://' + process.env.HEAD + ':6000' || 'localhost' + ':6000';
 const port = 6001;
 let job = null;
 
@@ -27,13 +27,14 @@ router.post('/working', koaBody,
 
 router.post('/job', koaBody,
   function *(next) {
-    console.log('/job');
 
-    job = this.request.body;
+    let data = this.request.body;
+    job = data.job;
 
     setTimeout(function() { 
       async function callWorker() {
-        let message = await worker(job);
+        data.python = process.env.PYTHON || 'python'
+        let message = await worker({ data: data });
 
         if (message.error) {
           console.log(message.error);
@@ -42,8 +43,8 @@ router.post('/job', koaBody,
 
           return;
         }
-      
-        request({ uri: host + '/complete', method: 'POST', json: job }, function (error, response, body) { job = null })
+
+        request({ uri: host + '/complete', method: 'POST', json: message.data }, function (error, response, body) { job = null })
       }
 
       callWorker();
