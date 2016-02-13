@@ -23,7 +23,8 @@ npm install
 
 python classify_image.py
 
+osx: add to .bash_profile -> export PATH=/usr/local/bin:$PATH
 
 node init
 
-add ip to queue's .workers.json
+add machine ip to queue's .workers.json

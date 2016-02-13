@@ -42,7 +42,7 @@ export function worker(options) {
 		var res = request('GET', url);
 		var contents = fs.writeFileSync(imagePath, res.getBody());
 
-		var child = exec('python classify_image.py --image_file ' + imagePath);
+		var child = exec('python classify_image.py --image_file ' + imagePath, {shell: '/bin/bash'});
 
 		/*
 		child.stderr.on('data', function (data) {
@@ -52,6 +52,8 @@ export function worker(options) {
 
 		child.stdout.on('data', function(data) {
 			fs.unlinkSync(imagePath);
+
+			console.log(data);
 
 			var response = []
 
