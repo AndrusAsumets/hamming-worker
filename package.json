@@ -16,7 +16,8 @@
     "koa-router": "^5.3.0",
     "kue": "^0.10.5",
     "node-neo4j": "^2.0.3",
-    "request": "^2.69.0"
+    "request": "^2.69.0",
+    "sync-request": "^3.0.0"
   },
   "devDependencies": {}
 }
