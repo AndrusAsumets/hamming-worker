@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 let app = require('koa')();
 let router = require('koa-router')();
 let koaBody = require('koa-body')();
@@ -5,7 +7,7 @@ import request from 'request';
 
 import { worker } from './src/worker';
 
-let host = 'http://127.0.0.1:6000';
+let host = 'http://' + process.env.HEAD || 'localhost' + ':6000';
 const port = 6001;
 let job = null;
 
