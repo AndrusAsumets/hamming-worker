@@ -3,7 +3,7 @@ var exec = require('child_process').exec;
 var fs = require('fs');
 var path = require('path');
 var neo4j = require('node-neo4j');
-var db = new neo4j('http://showlance:7474');
+var db = new neo4j('http://188.166.74.20:7474');
 
 export function worker(options) {
 	return new Promise(function(resolve, reject) {
