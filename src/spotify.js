@@ -5,7 +5,7 @@ var path = require('path');
 var neo4j = require('node-neo4j');
 var db = new neo4j('http://188.166.74.20:7474');
 
-export function worker(options) {
+export function spotify(options) {
 	return new Promise(function(resolve, reject) {
 		let element = options.data.job;
 		var url;
@@ -41,13 +41,7 @@ export function worker(options) {
 		var res = request('GET', url);
 		var contents = fs.writeFileSync(imagePath, res.getBody());
 
-		var child = exec('python classify_image.py --image_file ' + imagePath, {shell: '/bin/bash'});
-
-		/*
-		child.stderr.on('data', function (data) {
-			console.log('stderr: ' + data);
-		});
-		*/
+		var child = exec('python classify_image.py --image_file ' + imagePath);
 
 		child.stdout.on('data', function(data) {
 			fs.unlinkSync(imagePath);
@@ -71,7 +65,7 @@ export function worker(options) {
 		});
 
 		function saveMeta(value, element) {
-		  var query = "CREATE (" + element + ":Meta {meta:'" + element + "',album_type:'" + album_type + "',available_markets:'" + available_markets + "',external_urls:'" + external_urls + "',href:'" + href + "',id:'" + id + "',images:'" + images + "',name:'" + name + "',type:'" + type + "',uri:'" + uri + "',value:'" + value + "'})";
+		  var query = "CREATE (" + element + ":Meta {meta:'" + element + "',album_type:'" + album_type + "',available_markets:'" + available_markets + "',external_urls:'" + JSON.stringify(external_urls) + "',href:'" + href + "',id:'" + id + "',images:'" + JSON.stringify(images) + "',name:'" + name + "',type:'" + type + "',uri:'" + uri + "',value:'" + value + "'})";
 
 		  db.cypherQuery(query, function(err, result) {
 		      if(err) console.log(err);
@@ -80,4 +74,3 @@ export function worker(options) {
 		}
 	});
 }
-
