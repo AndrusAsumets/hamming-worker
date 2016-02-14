@@ -2,10 +2,11 @@ var request = require('sync-request');
 var exec = require('child_process').exec;
 var fs = require('fs');
 var path = require('path');
+var neo4j = require('node-neo4j');
+var db = new neo4j('localhost:7474');
 
 export function worker(options) {
 	return new Promise(function(resolve, reject) {
-		console.log(options);
 		let element = options.data.job;
 		var url;
 
@@ -37,8 +38,6 @@ export function worker(options) {
 			return resolve({ error: true });
 		}
 
-		console.log(url);
-
 		var res = request('GET', url);
 		var contents = fs.writeFileSync(imagePath, res.getBody());
 
@@ -53,10 +52,6 @@ export function worker(options) {
 		child.stdout.on('data', function(data) {
 			fs.unlinkSync(imagePath);
 
-			console.log(data);
-
-			var response = []
-
 			var results = JSON.parse(data);
 			results.forEach(result => {
 				var value = parseFloat(result.shift());
@@ -68,18 +63,21 @@ export function worker(options) {
 					element = element.split(' ').join('_');
 					element = element.replace(/[^a-zA-Z0-9\s!?]+/g, '');
 
-					let res = { value: value, element: element };
-
-					console.log(res);
-
-					response.push(res);
+					saveMeta(value, element);
 				});
 			});
 
-			options.result = response;
-
 			resolve({error: null, data: options });
 		});
+
+		function saveMeta(value, element) {
+		  var query = "CREATE (" + element + ":Meta {meta:'" + element + "',album_type:'" + album_type + "',available_markets:'" + available_markets + "',external_urls:'" + external_urls + "',href:'" + href + "',id:'" + id + "',images:'" + images + "',name:'" + name + "',type:'" + type + "',uri:'" + uri + "',value:'" + value + "'})";
+
+		  db.cypherQuery(query, function(err, result) {
+		      if(err) console.log(err);
+		      console.log(element, value);
+		  });
+		}
 	});
 }
 

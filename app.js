@@ -42,8 +42,6 @@ router.post('/job', koaBody,
           return;
         }
 
-        console.log(host);
-
         request({ uri: host + '/complete', method: 'POST', json: message.data }, function (error, response, body) { job = null })
       }
 
